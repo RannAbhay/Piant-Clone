@@ -4,7 +4,7 @@ import './App.css';
 function App() {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [brushColor, setBrushColor] = useState('#000000');
+  const [brushColor, setBrushColor] = useState('#000000'); 
   const [brushSize, setBrushSize] = useState(5);
   const lastPosition = useRef({ x: 0, y: 0 });
 
@@ -35,6 +35,19 @@ function App() {
     setIsDrawing(false);
   };
 
+  const clearCanvas = () => {
+    const ctx = canvasRef.current.getContext('2d');
+    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+  };
+
+  const saveCanvas = () => {
+    const dataUrl = canvasRef.current.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = 'drawing.png';
+    a.click();
+  };
+
   return (
     <div className="App">
       <h1>React Paint App</h1>
@@ -57,6 +70,8 @@ function App() {
             onChange={(e) => setBrushSize(e.target.value)} 
           />
         </label>
+        <button onClick={clearCanvas}>Clear</button>
+        <button onClick={saveCanvas}>Save</button>
       </div>
       <canvas
         ref={canvasRef}
