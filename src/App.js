@@ -74,7 +74,7 @@ function App() {
           />
         </label>
         <label>
-          Brush Size:
+        {isEraser ? 'Eraser Size' : 'Brush Size'}:
           <input 
             type="range" 
             min="1" 
