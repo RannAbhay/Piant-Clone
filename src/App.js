@@ -62,7 +62,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>React Paint App</h1>
+      <h1>My React Paint App</h1>
       <div className="controls">
         <label>
           Brush Color:
