@@ -5,7 +5,8 @@ function App() {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [brushColor, setBrushColor] = useState('#000000'); 
-  const [brushSize, setBrushSize] = useState(5);
+  const [brushSize, setBrushSize] = useState(5); 
+  const [isEraser, setIsEraser] = useState(false);
   const lastPosition = useRef({ x: 0, y: 0 });
 
   const startDrawing = (e) => {
@@ -13,15 +14,22 @@ function App() {
     lastPosition.current = { x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY };
   };
 
-  const draw = (e) => {
+  const drawOrErase = (e) => {
     if (!isDrawing) return;
     const ctx = canvasRef.current.getContext('2d');
     const { x, y } = lastPosition.current;
 
-    ctx.strokeStyle = brushColor;
     ctx.lineWidth = brushSize;
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
+
+    if (isEraser) {
+      ctx.strokeStyle = 'white';
+      ctx.globalCompositeOperation = 'destination-out';
+    } else {
+      ctx.strokeStyle = brushColor;
+      ctx.globalCompositeOperation = 'source-over';
+    }
 
     ctx.beginPath();
     ctx.moveTo(x, y);
@@ -48,6 +56,10 @@ function App() {
     a.click();
   };
 
+  const toggleEraser = () => {
+    setIsEraser(!isEraser);
+  };
+
   return (
     <div className="App">
       <h1>React Paint App</h1>
@@ -58,6 +70,7 @@ function App() {
             type="color" 
             value={brushColor} 
             onChange={(e) => setBrushColor(e.target.value)} 
+            disabled={isEraser}
           />
         </label>
         <label>
@@ -70,6 +83,7 @@ function App() {
             onChange={(e) => setBrushSize(e.target.value)} 
           />
         </label>
+        <button onClick={toggleEraser}>{isEraser ? 'Switch to Draw' : 'Switch to Eraser'}</button>
         <button onClick={clearCanvas}>Clear</button>
         <button onClick={saveCanvas}>Save</button>
       </div>
@@ -77,9 +91,9 @@ function App() {
         ref={canvasRef}
         width={800}
         height={600}
-        style={{ border: '1px solid black', cursor: 'crosshair' }}
+        style={{ border: '1px solid black', cursor: isEraser ? 'pointer' : 'crosshair' }}
         onMouseDown={startDrawing}
-        onMouseMove={draw}
+        onMouseMove={drawOrErase}
         onMouseUp={stopDrawing}
         onMouseLeave={stopDrawing}
       />
